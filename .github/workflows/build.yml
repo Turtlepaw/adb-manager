@@ -1,31 +1,40 @@
 name: Build MSI
 
 on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: windows-latest
 
     steps:
-    - uses: actions/checkout@v3
-    
-    - name: Set up JDK
-      uses: actions/setup-java@v3
-      with:
-        java-version: '17'
-        distribution: 'temurin'
-        
-    - name: Build with Gradle
-      run: .\gradlew packageMsi
-      
-    - name: Upload MSI artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: ADB-Manager-MSI
-        path: composeApp/build/compose/binaries/main/msi/*.msi
-        if-no-files-found: error
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0 # Required for changelog generation
 
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: "17"
+          distribution: "temurin"
+
+      - name: Build with Gradle
+        run: .\gradlew packageMsi
+
+      - name: Generate changelog
+        id: changelog
+        uses: metcalfc/changelog-generator@v4.1.0
+        with:
+          myToken: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        if: github.ref == 'refs/heads/main'
+        with:
+          files: composeApp/build/compose/binaries/main/msi/*.msi
+          body: ${{ steps.changelog.outputs.changelog }}
+          draft: false
+          prerelease: false
+          token: ${{ secrets.GITHUB_TOKEN }}
+          name: Release ${{ github.sha }}
+          tag_name: v${{ github.run_number }}
