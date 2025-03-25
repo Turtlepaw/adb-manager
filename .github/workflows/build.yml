@@ -1,0 +1,31 @@
+name: Build MSI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up JDK
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        
+    - name: Build with Gradle
+      run: .\gradlew packageMsi
+      
+    - name: Upload MSI artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: ADB-Manager-MSI
+        path: composeApp/build/compose/binaries/main/msi/*.msi
+        if-no-files-found: error
+
