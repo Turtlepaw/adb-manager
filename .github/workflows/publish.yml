@@ -4,13 +4,26 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  changelog:
     runs-on: ubuntu-latest
-
+    outputs:
+      changelog: ${{ steps.generate_changelog.outputs.changelog }}
     steps:
       - uses: actions/checkout@v3
         with:
-          fetch-depth: 0 # Required for changelog generation
+          fetch-depth: 0
+
+      - name: "✏️ Generate release changelog"
+        id: generate_changelog
+        uses: janheinrichmerker/action-github-changelog-generator@v2.3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+  build:
+    needs: changelog
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v3
 
       - name: Set up JDK
         uses: actions/setup-java@v3
@@ -28,23 +41,15 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      - name: Make Gradle wrapper executable
-        run: chmod +x ./gradlew
-
       - name: Build with Gradle
-        run: ./gradlew packageMsi
-
-      - name: "✏️ Generate release changelog"
-        uses: janheinrichmerker/action-github-changelog-generator@v2.3
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+        run: .\gradlew packageMsi
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
         if: github.ref == 'refs/heads/main'
         with:
           files: composeApp/build/compose/binaries/main/msi/*.msi
-          body: CHANGELOG.md
+          body: ${{ needs.changelog.outputs.changelog }}
           draft: false
           prerelease: false
           token: ${{ secrets.GITHUB_TOKEN }}
