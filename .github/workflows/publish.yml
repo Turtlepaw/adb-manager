@@ -5,7 +5,7 @@ on:
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v3
@@ -19,7 +19,7 @@ jobs:
           distribution: "temurin"
 
       - name: Build with Gradle
-        run: .\gradlew packageMsi
+        run: ./gradlew packageMsi
 
       - name: "✏️ Generate release changelog"
         uses: janheinrichmerker/action-github-changelog-generator@v2.3
