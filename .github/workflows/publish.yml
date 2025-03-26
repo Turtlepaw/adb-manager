@@ -21,18 +21,17 @@ jobs:
       - name: Build with Gradle
         run: .\gradlew packageMsi
 
-      - name: Generate changelog
-        id: changelog
-        uses: metcalfc/changelog-generator@v4.1.0
+      - name: "✏️ Generate release changelog"
+        uses: janheinrichmerker/action-github-changelog-generator@v2.3
         with:
-          myToken: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
         if: github.ref == 'refs/heads/main'
         with:
           files: composeApp/build/compose/binaries/main/msi/*.msi
-          body: ${{ steps.changelog.outputs.changelog }}
+          body: CHANGELOG.md
           draft: false
           prerelease: false
           token: ${{ secrets.GITHUB_TOKEN }}
