@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     id("org.jetbrains.compose.hot-reload")
+    kotlin("plugin.serialization") version "2.1.0"
 }
 
 composeCompiler {
@@ -34,6 +35,11 @@ kotlin {
 
             // https://mvnrepository.com/artifact/com.mayakapps.compose/window-styler
             implementation("com.mayakapps.compose:window-styler:0.3.2")
+
+            // ktor
+            implementation("io.ktor:ktor-client-core:3.1.1")
+            implementation("io.ktor:ktor-client-cio:3.1.1")
+            implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0")
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
@@ -52,7 +58,8 @@ compose.desktop {
         nativeDistributions {
             targetFormats(TargetFormat.Msi)
             packageName = "ADB Manager"
-            packageVersion = "1.0.0"
+            packageVersion = System.getenv("VERSION") ?: project.findProperty("packageVersion") as String
+            vendor = "Turtlepaw"
             windows {
                 dirChooser = true  // Allows the user to choose install location
                 menuGroup = "Turtlepaw"

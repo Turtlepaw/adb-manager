@@ -1,0 +1,26 @@
+{
+  "template": "## Changelog\n\n### Changes\n\n#{{CHANGELOG}}\n\n### Details\n- Commit: #{{COMMIT_HASH}}\n- By: #{{AUTHOR}}",
+  "categories": [
+    {
+      "title": "🚀 Features",
+      "labels": ["feature", "enhancement"]
+    },
+    {
+      "title": "🐛 Bug Fixes",
+      "labels": ["bug", "fix"]
+    },
+    {
+      "title": "📦 Dependencies",
+      "labels": ["dependencies"]
+    }
+  ],
+  "ignore_labels": [
+    "ignore"
+  ],
+  "sort": {
+    "order": "ASC",
+    "on_property": "mergedAt"
+  },
+  "max_tags_to_fetch": 10,
+  "max_back_track_time_days": 90
+}

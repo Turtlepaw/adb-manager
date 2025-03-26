@@ -96,10 +96,11 @@ fun main() = application {
             isDarkTheme = isSystemInDarkTheme(),
         )
             Surface(
-                modifier = Modifier.fillMaxSize().padding(20.dp),
+                modifier = Modifier.fillMaxSize(),
+                    //.padding(20.dp),
                 color = Color.Transparent,
-                shape = RoundedCornerShape(15.dp),
-                elevation = 3.dp
+                shape = RoundedCornerShape(10.dp),
+                //elevation = 3.dp
             ) {
                 Theme {
                     // Content within the box

@@ -9,25 +9,21 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.ui.Modifier
-import org.jetbrains.compose.ui.tooling.preview.Preview
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.WindowState
 import com.konyaco.fluent.FluentTheme
-import com.konyaco.fluent.background.Mica
 import com.konyaco.fluent.component.*
 import com.konyaco.fluent.icons.Icons
 import com.konyaco.fluent.icons.regular.ArrowSync
@@ -38,14 +34,30 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import org.jetbrains.compose.ui.tooling.preview.Preview
+import java.awt.Desktop
+import java.net.URI
 import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicBoolean
+
 
 // Define the connection mode enum
 enum class ConnectionMode(val displayName: String) {
     CONNECT("Connect"),
     PAIR("Pair")
+}
+
+fun openWebpage(uri: URI?): Boolean {
+    val desktop = if (Desktop.isDesktopSupported()) Desktop.getDesktop() else null
+    if (desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {
+        try {
+            desktop.browse(uri)
+            return true
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+        }
+    }
+    return false
 }
 
 @Composable
@@ -110,6 +122,37 @@ fun App(state: WindowState) {
             if (result == ContentDialogButton.Secondary) {
                 AppPreferences.showAdbVersion = false
             }
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        val currentAppVersion = "1.0.0"
+        val updateChecker = UpdateChecker(currentAppVersion)
+
+        val result = updateChecker.checkForUpdate("https://api.github.com/repos/Turtlepaw/adb-manager")
+
+        when {
+            result.isUpdateAvailable -> {
+                println("Update available! New version: ${result.latestVersion}")
+
+                scope.launch {
+                    val result = dialog.show(
+                        size = DialogSize.Min,
+                        title = "Update Available",
+                        contentText = "A new version of the app is available. ${currentAppVersion} -> ${result.latestVersion}",
+                        primaryButtonText = "Download",
+                        secondaryButtonText = "Remind me later",
+                    )
+
+                    if (result == ContentDialogButton.Primary) {
+                        openWebpage(
+                            URI.create("https://github.com/Turtlepaw/adb-manager/releases/latest")
+                        )
+                    }
+                }
+            }
+            result.error != null -> println("Error checking for updates: ${result.error}")
+            else -> println("You have the latest version")
         }
     }
 
