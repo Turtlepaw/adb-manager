@@ -32,16 +32,22 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      - name: Generate Changelog
-        id: changelog
-        uses: mikepenz/release-changelog-builder-action@v5
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          configuration: ".github/changelog-configuration.json"
-          outputFile: CHANGELOG.md
-          failOnError: false
-          emptyChangelog: true
+      # - name: Generate Changelog
+      #   id: changelog
+      #   uses: mikepenz/release-changelog-builder-action@v5
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   with:
+      #     configuration: ".github/changelog-configuration.json"
+      #     outputFile: CHANGELOG.md
+      #     failOnError: false
+
+      - name: Create Changelog
+        run: |
+          echo "# Changelog" > CHANGELOG.md
+          echo "## ${{ inputs.version }}" >> CHANGELOG.md
+          echo "- Automated release" >> CHANGELOG.md
+          git log --pretty=format:"- %s" -n 10 >> CHANGELOG.md
 
       - name: Build with Gradle
         run: .\gradlew packageMsi

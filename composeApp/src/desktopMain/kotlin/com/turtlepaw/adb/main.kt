@@ -99,7 +99,7 @@ fun main() = application {
                 modifier = Modifier.fillMaxSize(),
                     //.padding(20.dp),
                 color = Color.Transparent,
-                shape = RoundedCornerShape(10.dp),
+                shape = RoundedCornerShape(12.dp),
                 //elevation = 3.dp
             ) {
                 Theme {
