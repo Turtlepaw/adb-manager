@@ -3,15 +3,23 @@
   "categories": [
     {
       "title": "🚀 Features",
-      "labels": ["feature", "enhancement"]
+      "labels": [
+        "feature",
+        "enhancement"
+      ]
     },
     {
       "title": "🐛 Bug Fixes",
-      "labels": ["bug", "fix"]
+      "labels": [
+        "bug",
+        "fix"
+      ]
     },
     {
       "title": "📦 Dependencies",
-      "labels": ["dependencies"]
+      "labels": [
+        "dependencies"
+      ]
     }
   ],
   "ignore_labels": [

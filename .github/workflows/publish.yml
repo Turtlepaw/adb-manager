@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Release version (e.g., 1.0.0)'
+        description: "Release version (e.g., 1.0.0)"
         required: true
         type: string
 
@@ -34,12 +34,14 @@ jobs:
 
       - name: Generate Changelog
         id: changelog
-        uses: mikepenz/release-changelog-builder-action@v4
+        uses: mikepenz/release-changelog-builder-action@v5
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           configuration: ".github/changelog-configuration.json"
           outputFile: CHANGELOG.md
+          failOnError: false
+          emptyChangelog: true
 
       - name: Build with Gradle
         run: .\gradlew packageMsi
